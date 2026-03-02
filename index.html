@@ -422,7 +422,7 @@ function setModeUI(){
   const isInput = state.mode === "input";
   el("inputArea").style.display = isInput ? "block" : "none";
   el("ansInput").value = "";
-  el("hintLine").textContent = isInput ? "Enterで判定 / わからなければ「わからない」" : "「答えを表示」で暗記カードとして使えます。";
+  el("hintLine").textContent = isInput ? "Enterでも判定します / わからなければ「わからない」をクリック・タップ" : "「答えを表示」で暗記カードとして使えます。";
 }
 
 function showAnswer(){
