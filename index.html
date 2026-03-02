@@ -468,7 +468,7 @@ function judge(){
   if(!state.current) return;
   const user = normalize(el("ansInput").value);
   const answers = state.current.a.map(normalize);
-  const ok = answers.includes(user) || answers.some(a=> user && (a.includes(user) || user.includes(a)));
+  const ok = answers.includes(user);
 
   state.stats.seen += 1;
   if(ok){
