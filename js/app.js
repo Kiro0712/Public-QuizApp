@@ -117,12 +117,38 @@ function buildSectionOptions(){
   if(!sel) return;
   sel.innerHTML = "";
 
+  // 念のため、空データ科目を掴んでいたら有効な科目へ戻す
+  if(!hasChapterData(state.data)){
+    const fallbackSubject = pickAvailableSubject(state.subject);
+    const fallbackData =
+      (state.dataBySubject && state.dataBySubject[fallbackSubject]) ||
+      SUBJECT_DEFAULTS[fallbackSubject] ||
+      {};
+    if(hasChapterData(fallbackData)){
+      state.subject = fallbackSubject;
+      state.data = fallbackData;
+      const subjectSel = el("subjectSel");
+      if(subjectSel) subjectSel.value = fallbackSubject;
+    }
+  }
+
   const allOpt = document.createElement("option");
   allOpt.value = "__ALL__";
   allOpt.textContent = "全章";
   sel.appendChild(allOpt);
 
   const keys = Object.keys(state.data || {});
+  if(keys.length === 0){
+    const emptyOpt = document.createElement("option");
+    emptyOpt.value = "__EMPTY__";
+    emptyOpt.textContent = "章データがありません";
+    emptyOpt.disabled = true;
+    sel.appendChild(emptyOpt);
+    sel.value = "__ALL__";
+    state.section = "__ALL__";
+    return;
+  }
+
   keys.forEach(name=>{
     const opt = document.createElement("option");
     opt.value = name;
@@ -445,8 +471,18 @@ function pickSubjectFromModal(subj){
   loadCore(saved);
 }
 
+function readSavedState(){
+  try{
+    return JSON.parse(localStorage.getItem(LS_KEY) || "null");
+  }catch(_e){
+    // 壊れた保存データは読み飛ばして初期状態に戻す
+    localStorage.removeItem(LS_KEY);
+    return null;
+  }
+}
+
 function load(){
-  const saved = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+  const saved = readSavedState();
   _pendingSaved = saved;
 
   // 初回：科目未選択ならモーダルを表示して待つ
@@ -481,6 +517,11 @@ function loadCore(saved){
   el("subjectSel").value = state.subject;
 
   state.data = state.dataBySubject[state.subject] || {};
+  if(!hasChapterData(state.data)){
+    state.subject = pickAvailableSubject("公共");
+    el("subjectSel").value = state.subject;
+    state.data = state.dataBySubject[state.subject] || SUBJECT_DEFAULTS[state.subject] || {};
+  }
   state.section = state.sectionBySubject[state.subject] || "__ALL__";
   state.mode = (saved && saved.mode) ? saved.mode : "flash";
 
