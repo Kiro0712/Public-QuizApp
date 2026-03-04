@@ -13,7 +13,7 @@ const LOGIC_DATA = {
     {q:"「〜することに慣れている」を表す表現を書け。", d:"★★☆", a:["be used to 〜ing"]},
     {q:"次の語を並び替えて文を完成させよ。\n(I / feel / like / going / for / a / drive)", d:"★★☆", a:["I feel like going for a drive"]},
     {q:"次の語を並び替えて文を完成させよ。\n(I / looking / forward / am / hearing / to / you / from)", d:"★★★", a:["I am looking forward to hearing from you"]},
-    {q:"次の語を並び替えて文を完成させよ。\n(What / say / do / you / going / to / movies / the)", d:"★★★", a:["What do you say to going to the movies"]},
+    {q:"次の語を並び替えて文を完成させよ。\n(to / What / say / do / you / going / to / movies / the)", d:"★★★", a:["What do you say to going to the movies"]},
     {q:"「〜することを認める」という意味になる語を書け。", d:"★☆☆", a:["admit"]},
     {q:"「〜することをやめる」という意味になる語を書け。", d:"★☆☆", a:["quit"]},
   ],
