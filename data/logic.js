@@ -54,7 +54,7 @@ const LOGIC_DATA = {
     {q:"「写真から判断すると」を英語で書け。", d:"★★☆", a:["Judging from the picture"]},
     {q:"「率直に言うと」を英語で書け。", d:"★☆☆", a:["frankly speaking"]},
     {q:"Not knowing the answer, I didn't raise my hand. の意味を書け。", d:"★★☆", a:["答えが分からなかったので手を挙げなかった"]},
-    {q:"次の語を並び替えて文を完成させよ。\n(Seeing / police / officer / man / ran / the / away / the)", d:"★★★", a:["Seeing the police officer, the man ran away"]},
+    {q:"次の語を並び替えて文を完成させよ。\n(an / Seeing / police / officer / man / ran / the / away / the)", d:"★★★", a:["Seeing the police officer, the man ran away"]},
     {q:"次の語を並び替えて文を完成させよ。\n(Not / umbrella / carrying / he / wet / got)", d:"★★★", a:["Not carrying an umbrella, he got wet","Not carrying umbrella, he got wet"]},
     {q:"「休暇シーズンだったので」を表す分詞構文を書け。", d:"★★☆", a:["It being the holiday season"]},
     {q:"Walking along the street, I thought about lunch. の意味を書け。", d:"★★☆", a:["通りを歩きながら昼食のことを考えた"]},
