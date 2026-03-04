@@ -1,12 +1,12 @@
-﻿// 追加科目（データ未登録のため空）
+﻿// 追加科目データ
 const LOGIC_DATA = {};
-const BIO_DATA = {};
+const BIO_DATA_SOURCE = (typeof BIO_DATA === "undefined") ? {} : BIO_DATA;
 
 const SUBJECT_DEFAULTS = {
   "公共": DEFAULT_DATA,
   "保健": HEALTH_DATA,
   "論理・表現Ⅰ": LOGIC_DATA,
-  "生物基礎": BIO_DATA,
+  "生物基礎": BIO_DATA_SOURCE,
 };
 
 /* =========================
@@ -713,4 +713,5 @@ function maybeRunTests(){
 
 wire();
 load();
+
 
