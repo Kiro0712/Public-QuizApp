@@ -278,6 +278,34 @@ function hideAnswer(){
   el("answerBox").textContent = "";
 }
 
+function hideQuestionImage(){
+  const wrap = el("qImageWrap");
+  const img = el("qImage");
+  if(wrap) wrap.style.display = "none";
+  if(img){
+    img.onerror = null;
+    img.removeAttribute("src");
+    img.alt = "問題画像";
+  }
+}
+
+function renderQuestionImage(item){
+  const wrap = el("qImageWrap");
+  const img = el("qImage");
+  if(!wrap || !img) return;
+
+  const src = (item?.i || item?.img || item?.image || "").toString().trim();
+  if(!src){
+    hideQuestionImage();
+    return;
+  }
+
+  img.onerror = ()=>{ hideQuestionImage(); };
+  img.alt = (item?.iAlt || item?.imgAlt || item?.imageAlt || "問題画像").toString();
+  img.src = src;
+  wrap.style.display = "block";
+}
+
 function renderCurrent(){
   const total = state.order.length;
   const pos = total ? (state.idx + 1) : 0;
@@ -286,6 +314,7 @@ function renderCurrent(){
   el("metaPill").textContent = `選択中：${label} - ${pos} / ${total}${state.reviewMode ? "（間違い復習）" : ""}`;
 
   el("qText").innerHTML = formatQuestionHTML(state.current?.q || "");
+  renderQuestionImage(state.current);
 
   const dl = el("diffLine");
   if(dl) dl.textContent = state.current?.d ? `難易度：${state.current.d}` : "";
@@ -296,6 +325,7 @@ function renderCurrent(){
 function nextQuestion(){
   if(state.order.length === 0){
     el("qText").textContent = "この章に問題がありません。";
+    hideQuestionImage();
     const dl = el("diffLine");
     if(dl) dl.textContent = "";
     const label0 = state.section === "__ALL__" ? "全章" : state.section;
@@ -713,4 +743,3 @@ function maybeRunTests(){
 
 wire();
 load();
-

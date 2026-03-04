@@ -38,6 +38,16 @@
     .pill{display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);font-size:12px;color:var(--muted)}
 
     .q{font-size:18px;line-height:1.5;margin:6px 0 10px}
+    .qImageWrap{display:none;margin:0 0 10px}
+    .qImage{
+      display:block;
+      width:100%;
+      max-height:280px;
+      object-fit:contain;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.03);
+    }
 
     /* 選択肢行（ア：/イ：/ウ：...）を小さく＆間隔を詰める */
     .choiceLine{font-size:0.75em;display:block;margin:0;line-height:1.1}
@@ -143,6 +153,9 @@
     <div class="sep" id="sepStatsBottom"></div>
 
     <div class="q" id="qText">章を選んで「次の問題」</div>
+    <div id="qImageWrap" class="qImageWrap">
+      <img id="qImage" class="qImage" alt="問題画像" />
+    </div>
     <div class="small muted" id="diffLine"></div>
 
     <div id="inputArea" style="display:none">
