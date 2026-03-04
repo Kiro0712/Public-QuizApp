@@ -1,11 +1,11 @@
 ﻿// 追加科目データ
-const LOGIC_DATA = {};
+const LOGIC_DATA_SOURCE = (typeof LOGIC_DATA === "undefined") ? {} : LOGIC_DATA;
 const BIO_DATA_SOURCE = (typeof BIO_DATA === "undefined") ? {} : BIO_DATA;
 
 const SUBJECT_DEFAULTS = {
   "公共": DEFAULT_DATA,
   "保健": HEALTH_DATA,
-  "論理・表現Ⅰ": LOGIC_DATA,
+  "論理・表現Ⅰ": LOGIC_DATA_SOURCE,
   "生物基礎": BIO_DATA_SOURCE,
 };
 
@@ -33,7 +33,8 @@ const state = {
   revealed: false,
   stats: {seen:0, ok:0, ng:0, streak:0},
   mistakes: new Set(),
-  reviewMode: false
+  reviewMode: false,
+  orderBuilder: {active:false, tokens:[], selected:[]}
 };
 
 const el = (id)=>document.getElementById(id);
@@ -110,6 +111,165 @@ function formatQuestionHTML(rawQ){
   }
 
   return out.join("");
+}
+
+function normalizeForOrder(s){
+  return normalize(s).replace(/[.,!?;:，。]/g,"").toLowerCase();
+}
+
+function extractOrderTokens(rawQ){
+  const q = (rawQ ?? "").toString()
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .replace(/\\n/g, "\n");
+
+  const lines = q.split("\n").map(x => x.trim()).filter(Boolean);
+  const line = lines.find(x => /^\(.*\/.*\)$/.test(x));
+  if(!line) return [];
+
+  return line
+    .slice(1, -1)
+    .split("/")
+    .map(x => x.trim())
+    .filter(Boolean);
+}
+
+function resetOrderBuilderUI(){
+  state.orderBuilder = {active:false, tokens:[], selected:[]};
+
+  const area = el("orderArea");
+  const ansBox = el("orderAnswerBox");
+  const bankBox = el("orderBankBox");
+  const input = el("ansInput");
+
+  if(area) area.style.display = "none";
+  if(ansBox) ansBox.innerHTML = "";
+  if(bankBox) bankBox.innerHTML = "";
+  if(input){
+    input.readOnly = false;
+    input.placeholder = "ここに入力";
+  }
+}
+
+function orderTokenTextById(id){
+  const t = (state.orderBuilder.tokens || []).find(x => x.id === id);
+  return t ? t.text : "";
+}
+
+function syncOrderAnswerToInput(){
+  if(!state.orderBuilder.active) return;
+  const input = el("ansInput");
+  if(!input) return;
+
+  const text = state.orderBuilder.selected
+    .map(orderTokenTextById)
+    .filter(Boolean)
+    .join(" ");
+
+  input.value = text;
+}
+
+function addOrderToken(id){
+  if(!state.orderBuilder.active) return;
+  if(state.orderBuilder.selected.includes(id)) return;
+  state.orderBuilder.selected.push(id);
+  renderOrderBuilder();
+}
+
+function removeOrderTokenAt(pos){
+  if(!state.orderBuilder.active) return;
+  if(pos < 0 || pos >= state.orderBuilder.selected.length) return;
+  state.orderBuilder.selected.splice(pos, 1);
+  renderOrderBuilder();
+}
+
+function popOrderToken(){
+  if(!state.orderBuilder.active) return;
+  state.orderBuilder.selected.pop();
+  renderOrderBuilder();
+}
+
+function clearOrderTokens(){
+  if(!state.orderBuilder.active) return;
+  state.orderBuilder.selected = [];
+  renderOrderBuilder();
+}
+
+function renderOrderBuilder(){
+  const area = el("orderArea");
+  const ansBox = el("orderAnswerBox");
+  const bankBox = el("orderBankBox");
+  if(!area || !ansBox || !bankBox) return;
+
+  if(!state.orderBuilder.active){
+    area.style.display = "none";
+    ansBox.innerHTML = "";
+    bankBox.innerHTML = "";
+    return;
+  }
+
+  area.style.display = "block";
+  ansBox.innerHTML = "";
+  bankBox.innerHTML = "";
+
+  if(state.orderBuilder.selected.length === 0){
+    const ph = document.createElement("div");
+    ph.className = "orderPlaceholder";
+    ph.textContent = "ここに単語が並びます";
+    ansBox.appendChild(ph);
+  }else{
+    state.orderBuilder.selected.forEach((id, pos) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "tokenBtn answer";
+      btn.textContent = orderTokenTextById(id);
+      btn.onclick = ()=> removeOrderTokenAt(pos);
+      ansBox.appendChild(btn);
+    });
+  }
+
+  const selected = new Set(state.orderBuilder.selected);
+  state.orderBuilder.tokens.forEach(t => {
+    if(selected.has(t.id)) return;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "tokenBtn";
+    btn.textContent = t.text;
+    btn.onclick = ()=> addOrderToken(t.id);
+    bankBox.appendChild(btn);
+  });
+
+  syncOrderAnswerToInput();
+}
+
+function setupOrderBuilderForCurrent(item){
+  const tokens = extractOrderTokens(item?.q || "");
+  const enabled = state.mode === "input" && tokens.length > 0;
+  if(!enabled){
+    resetOrderBuilderUI();
+    return;
+  }
+
+  const normalizedTokens = tokens.map((text, idx) => {
+    if(idx !== 0) return text;
+    if((text || "").trim() === "I") return "I";
+    return text.replace(/^([A-Z])/, (_, c)=> c.toLowerCase());
+  });
+
+  state.orderBuilder = {
+    active: true,
+    tokens: normalizedTokens.map((text, idx) => ({id:String(idx), text})),
+    selected: [],
+  };
+
+  const input = el("ansInput");
+  if(input){
+    input.value = "";
+    input.readOnly = true;
+    input.placeholder = "下の語句をタップして並べ替え";
+  }
+
+  renderOrderBuilder();
 }
 
 function buildSectionOptions(){
@@ -260,6 +420,7 @@ function setModeUI(){
   el("hintLine").textContent = isInput
     ? "Enterでも判定します / わからなければ「わからない」をクリック・タップ"
     : "";
+  if(!isInput) resetOrderBuilderUI();
 }
 
 function showAnswer(){
@@ -342,6 +503,7 @@ function renderCurrent(){
   el("metaPill").textContent = `選択中：${label} - ${pos} / ${total}${state.reviewMode ? "（間違い復習）" : ""}`;
 
   el("qText").innerHTML = formatQuestionHTML(state.current?.q || "");
+  setupOrderBuilderForCurrent(state.current);
   renderQuestionImage(state.current);
 
   const dl = el("diffLine");
@@ -353,6 +515,7 @@ function renderCurrent(){
 function nextQuestion(){
   if(state.order.length === 0){
     el("qText").textContent = "この章に問題がありません。";
+    resetOrderBuilderUI();
     hideQuestionImage();
     const dl = el("diffLine");
     if(dl) dl.textContent = "";
@@ -396,8 +559,10 @@ function prevQuestion(){
 
 function judge(){
   if(!state.current) return;
-  const user = normalize(el("ansInput").value);
-  const answers = (state.current.a || []).map(normalize);
+  const useOrderJudge = !!state.orderBuilder.active;
+  const userRaw = el("ansInput").value;
+  const user = useOrderJudge ? normalizeForOrder(userRaw) : normalize(userRaw);
+  const answers = (state.current.a || []).map(x => useOrderJudge ? normalizeForOrder(x) : normalize(x));
   const ok = answers.includes(user);
 
   state.stats.seen += 1;
@@ -682,6 +847,7 @@ function wire(){
   el("modeSel").addEventListener("change", ()=>{
     state.mode = el("modeSel").value;
     setModeUI();
+    if(state.current) renderCurrent();
     updateNavButtons();
     save();
   });
@@ -693,6 +859,8 @@ function wire(){
   el("btnGiveUp").onclick = ()=>giveUp();
   el("btnResetStats").onclick = ()=>resetStats();
   el("btnReviewMistakes").onclick = ()=>startReviewMistakes();
+  el("btnOrderBack").onclick = ()=>popOrderToken();
+  el("btnOrderClear").onclick = ()=>clearOrderTokens();
   el("searchBox").addEventListener("input", (e)=>renderSearch(e.target.value));
 
   // 科目切替
@@ -750,6 +918,7 @@ function maybeRunTests(){
 
   assert(Array.isArray(HEALTH_DATA["9 喫煙と健康"]) && HEALTH_DATA["9 喫煙と健康"].length > 0, "health chapter 9 exists");
   assert(Array.isArray(HEALTH_DATA["10 飲酒と健康"]) && HEALTH_DATA["10 飲酒と健康"].length > 0, "health chapter 10 exists");
+  assert(Array.isArray(LOGIC_DATA_SOURCE["Lesson 18"]) && LOGIC_DATA_SOURCE["Lesson 18"].length > 0, "logic lesson 18 exists");
 
   // 選択肢の改行がデータに入っている
   assert(HEALTH_DATA["9 喫煙と健康"][7].q.includes("\n"), "health multiline uses \\n");
@@ -758,6 +927,10 @@ function maybeRunTests(){
   const html = formatQuestionHTML(HEALTH_DATA["9 喫煙と健康"][7].q);
   assert(html.includes("choiceLine"), "formatter adds choiceLine");
   assert(html.includes("ア："), "formatter keeps choices");
+
+  // 並び替え問題のトークン抽出
+  const orderTokens = extractOrderTokens(LOGIC_DATA_SOURCE["Lesson 18"][8].q);
+  assert(orderTokens.length > 0, "order tokens extracted");
 
   // 全章で order が作れる
   state.subject = "公共";

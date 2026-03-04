@@ -57,6 +57,31 @@
     .ok{color:var(--good)}
     .ng{color:var(--bad)}
     .small{font-size:12px}
+    .orderArea{display:none;margin-top:10px}
+    .orderBox{
+      min-height:44px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      padding:8px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.03);
+    }
+    .orderPlaceholder{font-size:12px;color:var(--muted)}
+    .tokenBank{margin-top:8px}
+    .tokenBtn{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(122,162,255,.16);
+      color:var(--text);
+      cursor:pointer;
+      font-size:13px;
+      line-height:1.2;
+    }
+    .tokenBtn.answer{background:rgba(52,211,153,.16)}
 
     /* 難易度表示は白色にする */
     #diffLine{color:var(--text);}
@@ -95,10 +120,10 @@
     <div class="modalList">
       <button class="modalBtn" data-subject="公共">→　公共</button>
       <button class="modalBtn" data-subject="保健">→　保健</button>
-      <button class="modalBtn" data-subject="論理・表現Ⅰ" disabled>→　論理・表現Ⅰ</button>
+      <button class="modalBtn" data-subject="論理・表現Ⅰ">→　論理・表現Ⅰ</button>
       <button class="modalBtn" data-subject="生物基礎">→　生物基礎</button>
     </div>
-    <div class="modalNote">※「論理・表現Ⅰ」はただいまデータを作成しています。</div>
+    <div class="modalNote">※科目を選ぶと問題が始まります。</div>
   </div>
 </div>
 
@@ -109,7 +134,7 @@
       <select id="subjectSel">
         <option value="公共">公共</option>
         <option value="保健">保健</option>
-        <option value="論理・表現Ⅰ" disabled>論理・表現Ⅰ</option>
+        <option value="論理・表現Ⅰ">論理・表現Ⅰ</option>
         <option value="生物基礎">生物基礎</option>
       </select>
     </div>
@@ -161,6 +186,15 @@
     <div id="inputArea" style="display:none">
       <label>あなたの答え（例：プラザ合意）</label>
       <input id="ansInput" autocomplete="off" placeholder="ここに入力" />
+      <div id="orderArea" class="orderArea">
+        <div class="small muted">語句をタップして並び替えてください（上段をタップで取り消し）</div>
+        <div id="orderAnswerBox" class="orderBox" style="margin-top:6px"></div>
+        <div id="orderBankBox" class="orderBox tokenBank"></div>
+        <div class="row" style="margin-top:8px">
+          <button id="btnOrderBack" type="button" class="warn">1語戻す</button>
+          <button id="btnOrderClear" type="button">クリア</button>
+        </div>
+      </div>
       <div class="row" style="margin-top:10px">
         <button id="btnJudge" class="primary">正誤判定</button>
         <button id="btnGiveUp" class="bad">わからない</button>
@@ -195,6 +229,7 @@
     const files = [
       "data/public.js",
       "data/health.js",
+      "data/logic.js",
       "data/bio.js",
       "js/app.js",
     ];
