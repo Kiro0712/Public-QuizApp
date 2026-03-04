@@ -484,13 +484,13 @@ function readSavedState(){
 function load(){
   const saved = readSavedState();
   _pendingSaved = saved;
-
-  // 初回：科目未選択ならモーダルを表示して待つ
-  if(!saved || !saved.subjectChosen){
+  // 起動時は毎回、科目選択モーダルを表示する
+  const modal = el("subjectModal");
+  if(modal){
     openSubjectModal();
     return;
   }
-
+  // 万一モーダル要素が無い場合のみ、そのまま起動する
   loadCore(saved);
 }
 
@@ -713,5 +713,4 @@ function maybeRunTests(){
 
 wire();
 load();
-
 
