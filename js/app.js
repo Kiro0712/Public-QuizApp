@@ -1,6 +1,7 @@
 ﻿// 追加科目データ
 const LOGIC_DATA_SOURCE = (typeof LOGIC_DATA === "undefined") ? {} : LOGIC_DATA;
 const BIO_DATA_SOURCE = (typeof BIO_DATA === "undefined") ? {} : BIO_DATA;
+const EC1_DATA_SOURCE = (typeof EC1_DATA === "undefined") ? {} : EC1_DATA;
 const MATH1_DATA_SOURCE = (typeof MATH1_DATA === "undefined") ? {} : MATH1_DATA;
 const PHYSICS_BASIC_DATA_SOURCE = (typeof PHYSICS_BASIC_DATA === "undefined") ? {} : PHYSICS_BASIC_DATA;
 
@@ -9,6 +10,7 @@ const SUBJECT_DEFAULTS = {
   "保健": HEALTH_DATA,
   "論理・表現Ⅰ": LOGIC_DATA_SOURCE,
   "生物基礎": BIO_DATA_SOURCE,
+  "ＥＣⅠ": EC1_DATA_SOURCE,
   "数学Ⅰ": MATH1_DATA_SOURCE,
   "物理基礎": PHYSICS_BASIC_DATA_SOURCE,
 };
@@ -856,6 +858,7 @@ function loadCore(saved){
     "保健": SUBJECT_DEFAULTS["保健"],
     "論理・表現Ⅰ": SUBJECT_DEFAULTS["論理・表現Ⅰ"],
     "生物基礎": SUBJECT_DEFAULTS["生物基礎"],
+    "ＥＣⅠ": SUBJECT_DEFAULTS["ＥＣⅠ"],
     "数学Ⅰ": SUBJECT_DEFAULTS["数学Ⅰ"],
     "物理基礎": SUBJECT_DEFAULTS["物理基礎"],
   };
@@ -1064,6 +1067,7 @@ function maybeRunTests(){
   assert(!!SUBJECT_DEFAULTS["保健"], "has 保健");
   assert(!!SUBJECT_DEFAULTS["論理・表現Ⅰ"], "has 論理・表現Ⅰ");
   assert(!!SUBJECT_DEFAULTS["生物基礎"], "has 生物基礎");
+  assert(!!SUBJECT_DEFAULTS["ＥＣⅠ"], "has ＥＣⅠ");
   assert(!!SUBJECT_DEFAULTS["数学Ⅰ"], "has 数学Ⅰ");
   assert(!!SUBJECT_DEFAULTS["物理基礎"], "has 物理基礎");
 
