@@ -4,6 +4,7 @@ const BIO_DATA_SOURCE = (typeof BIO_DATA === "undefined") ? {} : BIO_DATA;
 const EC1_DATA_SOURCE = (typeof EC1_DATA === "undefined") ? {} : EC1_DATA;
 const MATH1_DATA_SOURCE = (typeof MATH1_DATA === "undefined") ? {} : MATH1_DATA;
 const PHYSICS_BASIC_DATA_SOURCE = (typeof PHYSICS_BASIC_DATA === "undefined") ? {} : PHYSICS_BASIC_DATA;
+const WEEK_TEST8_DATA_SOURCE = (typeof WEEK_TEST8_DATA === "undefined") ? {} : WEEK_TEST8_DATA;
 
 const SUBJECT_DEFAULTS = {
   "公共": DEFAULT_DATA,
@@ -13,6 +14,7 @@ const SUBJECT_DEFAULTS = {
   "ＥＣⅠ": EC1_DATA_SOURCE,
   "数学Ⅰ": MATH1_DATA_SOURCE,
   "物理基礎": PHYSICS_BASIC_DATA_SOURCE,
+  "朝学習テスト⑧": WEEK_TEST8_DATA_SOURCE,
 };
 
 /* =========================
@@ -230,10 +232,36 @@ function syncOrderAnswerToInput(){
   const input = el("ansInput");
   if(!input) return;
 
-  const text = state.orderBuilder.selected
+  const parts = state.orderBuilder.selected
     .map(orderTokenTextById)
-    .filter(Boolean)
-    .join(" ");
+    .filter(Boolean);
+  const isCharLike = parts.every(t => t.trim().length === 1);
+  let text = "";
+
+  if(isCharLike){
+    const raw = parts.join("");
+    const answers = state.current?.a || [];
+    const template = (((answers.find(x => /\s/.test((x || "").toString())) || answers[0] || "").toString()))
+      .replace(/\s+/g, " ");
+
+    if(template.includes(" ")){
+      let ti = 0;
+      let out = "";
+      for(const ch of raw){
+        while(ti < template.length && template[ti] === " "){
+          if(out && out[out.length - 1] !== " ") out += " ";
+          ti += 1;
+        }
+        out += ch;
+        ti += 1;
+      }
+      text = out;
+    }else{
+      text = raw;
+    }
+  }else{
+    text = parts.join(" ");
+  }
 
   input.value = text;
 }
@@ -316,7 +344,19 @@ function renderOrderBuilder(){
 }
 
 function setupOrderBuilderForCurrent(item){
-  const tokens = extractOrderTokens(item?.q || "");
+  let tokens = extractOrderTokens(item?.q || "");
+  if(tokens.length === 0){
+    const firstLine = ((item?.q || "").toString().split(/\r?\n/)[0] || "").trim();
+    const sec = (item?._section || state.section || "").toString();
+    const isCharOrder =
+      sec.includes("文字並び替え") ||
+      firstLine.includes("次の文字を並び替えて英語にせよ") ||
+      /次の文字.*並び替え/.test(firstLine);
+    if(isCharOrder){
+      const base = (((item?.a || [])[0] || "").toString()).replace(/\s+/g, "");
+      if(base) tokens = base.split("");
+    }
+  }
   const enabled = state.mode === "input" && tokens.length > 0;
   if(!enabled){
     resetOrderBuilderUI();
@@ -329,9 +369,16 @@ function setupOrderBuilderForCurrent(item){
     return text.replace(/^([A-Z])/, (_, c)=> c.toLowerCase());
   });
 
+  const shuffledTokens = normalizedTokens
+    .map((text, idx) => ({id:String(idx), text}));
+  for(let i = shuffledTokens.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledTokens[i], shuffledTokens[j]] = [shuffledTokens[j], shuffledTokens[i]];
+  }
+
   state.orderBuilder = {
     active: true,
-    tokens: normalizedTokens.map((text, idx) => ({id:String(idx), text})),
+    tokens: shuffledTokens,
     selected: [],
   };
 
@@ -551,8 +598,7 @@ function renderQuestionHint(item){
   if(!wrap) return;
 
   const raw = item?.h;
-  const isMath1 = state.subject === "数学Ⅰ";
-  if(!isMath1 || !raw){
+  if(!raw){
     hideQuestionHint();
     return;
   }
@@ -861,6 +907,7 @@ function loadCore(saved){
     "ＥＣⅠ": SUBJECT_DEFAULTS["ＥＣⅠ"],
     "数学Ⅰ": SUBJECT_DEFAULTS["数学Ⅰ"],
     "物理基礎": SUBJECT_DEFAULTS["物理基礎"],
+    "朝学習テスト⑧": SUBJECT_DEFAULTS["朝学習テスト⑧"],
   };
 
   const hasCurrent = saved && saved.dataVersion === DATA_VERSION;
@@ -930,6 +977,11 @@ function resetStats(){
   state.stats = {seen:0, ok:0, ng:0, streak:0};
   state.mistakes = new Set();
   state.reviewMode = false;
+  // 並び替えの選択状態・入力履歴も科目単位で初期化
+  ensureSubjectAnswerStore(state.subject);
+  state.answersBySubject[state.subject] = {};
+  resetOrderBuilderUI();
+  if(el("ansInput")) el("ansInput").value = "";
 
   // 画面反映
   renderStats();
@@ -1070,6 +1122,7 @@ function maybeRunTests(){
   assert(!!SUBJECT_DEFAULTS["ＥＣⅠ"], "has ＥＣⅠ");
   assert(!!SUBJECT_DEFAULTS["数学Ⅰ"], "has 数学Ⅰ");
   assert(!!SUBJECT_DEFAULTS["物理基礎"], "has 物理基礎");
+  assert(!!SUBJECT_DEFAULTS["朝学習テスト⑧"], "has 朝学習テスト⑧");
 
   assert(Array.isArray(HEALTH_DATA["9 喫煙と健康"]) && HEALTH_DATA["9 喫煙と健康"].length > 0, "health chapter 9 exists");
   assert(Array.isArray(HEALTH_DATA["10 飲酒と健康"]) && HEALTH_DATA["10 飲酒と健康"].length > 0, "health chapter 10 exists");
