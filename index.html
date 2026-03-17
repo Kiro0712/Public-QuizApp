@@ -152,6 +152,42 @@
     .modalBtn:hover{background:rgba(122,162,255,.28)}
     .modalBtn[disabled]{opacity:.45;cursor:not-allowed}
     .modalNote{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.5}
+    
+        /* ===== モーダル内グループ折りたたみ ===== */
+    .modalGroup{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;
+      background:rgba(255,255,255,.03);
+      overflow:hidden;
+    }
+    .modalGroupSummary{
+      list-style:none;
+      cursor:pointer;
+      user-select:none;
+      font-weight:700;
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .modalGroupSummary::-webkit-details-marker{display:none}
+    .modalGroupSummary::after{
+      content:"▼";
+      font-size:12px;
+      color:var(--muted);
+    }
+    .modalGroup:not([open]) .modalGroupSummary::after{
+      content:"▶";
+    }
+    .modalGroupBody{
+      display:grid;
+      gap:10px;
+      padding:0 12px 12px;
+      border-top:1px solid rgba(255,255,255,.08);
+    }
+    .modalGroup:not([open]) .modalGroupBody{
+      display:none;
+    }
 
   </style>
 </head>
@@ -163,10 +199,10 @@
 </header>
 
 <!-- 初回：出題科目選択 -->
-<div class="modalOverlay" id="subjectModal" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="subjectModalTitle">
-    <h2 id="subjectModalTitle">出題科目・テストを選択してください</h2>
-    <div class="modalList">
+<div class="modalList">
+  <details class="modalGroup" open>
+    <summary class="modalGroupSummary">学年末テスト</summary>
+    <div class="modalGroupBody">
       <button class="modalBtn" data-subject="公共">→　公共</button>
       <button class="modalBtn" data-subject="保健">→　保健</button>
       <button class="modalBtn" data-subject="論理・表現Ⅰ">→　論理・表現Ⅰ</button>
@@ -174,10 +210,17 @@
       <button class="modalBtn" data-subject="ＥＣⅠ">→　ＥＣⅠ</button>
       <button class="modalBtn" data-subject="数学Ⅰ">→　数学Ⅰ</button>
       <button class="modalBtn" data-subject="物理基礎">→　物理基礎</button>
-      <button class="modalBtn" data-subject="朝学習テスト⑧">→　朝学習テスト⑧</button>
-      <button class="modalBtn" data-subject="朝学習テスト⑨" disabled>→　朝学習テスト⑨</button>
-      <button class="modalBtn" data-subject="朝学習テスト⑩" disabled>→　朝学習テスト⑩</button>
     </div>
+  </details>
+  <details class="modalGroup">
+    <summary class="modalGroupSummary">朝学習テスト</summary>
+    <div class="modalGroupBody">
+      <button class="modalBtn" data-subject="朝学習テスト⑧">→　朝学習テスト⑧</button>
+      <button class="modalBtn" data-subject="朝学習テスト⑨">→　朝学習テスト⑨</button>
+      <button class="modalBtn" data-subject="朝学習テスト⑩">→　朝学習テスト⑩</button>
+    </div>
+  </details>
+</div>
     <div class="modalNote">※科目・テストを選ぶと問題が始まります。</div>
   </div>
 </div>
