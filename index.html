@@ -153,39 +153,62 @@
     .modalBtn[disabled]{opacity:.45;cursor:not-allowed}
     .modalNote{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.5}
     
-        /* ===== モーダル内グループ折りたたみ ===== */
-    .modalGroup{
+    /* ===== モーダルのグループ表示 ===== */
+    .modalList.grouped{
+      display:grid;
+      gap:12px;
+      margin-top:10px;
+    }
+
+    .modalSection{
       border:1px solid rgba(255,255,255,.10);
       border-radius:14px;
-      background:rgba(255,255,255,.03);
+      background:rgba(255,255,255,.04);
       overflow:hidden;
     }
-    .modalGroupSummary{
+
+    .modalSectionTitle{
+      padding:12px 14px;
+      font-weight:700;
+      font-size:14px;
+      color:var(--text);
+      background:rgba(255,255,255,.03);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    .modalSectionBody{
+      display:grid;
+      gap:10px;
+      padding:12px;
+    }
+
+    .modalSection summary{
       list-style:none;
       cursor:pointer;
       user-select:none;
-      font-weight:700;
-      padding:12px 14px;
+    }
+
+    .modalSection summary::-webkit-details-marker{
+      display:none;
+    }
+
+    .modalSection summary.collapsible{
       display:flex;
       align-items:center;
       justify-content:space-between;
     }
-    .modalGroupSummary::-webkit-details-marker{display:none}
-    .modalGroupSummary::after{
+
+    .modalSection summary.collapsible::after{
       content:"▼";
       font-size:12px;
       color:var(--muted);
     }
-    .modalGroup:not([open]) .modalGroupSummary::after{
+
+    .modalSection:not([open]) summary.collapsible::after{
       content:"▶";
     }
-    .modalGroupBody{
-      display:grid;
-      gap:10px;
-      padding:0 12px 12px;
-      border-top:1px solid rgba(255,255,255,.08);
-    }
-    .modalGroup:not([open]) .modalGroupBody{
+
+    .modalSection:not([open]) .modalSectionBody{
       display:none;
     }
 
@@ -199,10 +222,10 @@
 </header>
 
 <!-- 初回：出題科目選択 -->
-<div class="modalList">
-  <details class="modalGroup" open>
-    <summary class="modalGroupSummary">学年末テスト</summary>
-    <div class="modalGroupBody">
+<div class="modalList grouped">
+  <div class="modalSection">
+    <div class="modalSectionTitle">学年末テスト</div>
+    <div class="modalSectionBody">
       <button class="modalBtn" data-subject="公共">→　公共</button>
       <button class="modalBtn" data-subject="保健">→　保健</button>
       <button class="modalBtn" data-subject="論理・表現Ⅰ">→　論理・表現Ⅰ</button>
@@ -211,18 +234,16 @@
       <button class="modalBtn" data-subject="数学Ⅰ">→　数学Ⅰ</button>
       <button class="modalBtn" data-subject="物理基礎">→　物理基礎</button>
     </div>
-  </details>
-  <details class="modalGroup">
-    <summary class="modalGroupSummary">朝学習テスト</summary>
-    <div class="modalGroupBody">
+  </div>
+
+  <details class="modalSection">
+    <summary class="modalSectionTitle collapsible">朝学習テスト</summary>
+    <div class="modalSectionBody">
       <button class="modalBtn" data-subject="朝学習テスト⑧">→　朝学習テスト⑧</button>
-      <button class="modalBtn" data-subject="朝学習テスト⑨">→　朝学習テスト⑨</button>
-      <button class="modalBtn" data-subject="朝学習テスト⑩">→　朝学習テスト⑩</button>
+      <button class="modalBtn" data-subject="朝学習テスト⑨" disabled>→　朝学習テスト⑨</button>
+      <button class="modalBtn" data-subject="朝学習テスト⑩" disabled>→　朝学習テスト⑩</button>
     </div>
   </details>
-</div>
-    <div class="modalNote">※科目・テストを選ぶと問題が始まります。</div>
-  </div>
 </div>
 
 <div class="wrap grid">
