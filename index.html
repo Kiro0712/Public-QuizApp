@@ -202,6 +202,14 @@
     .modalSection:not([open]) .modalSectionBody{
       display:none;
     }
+    
+    .modalAlert{
+      color:#f87171;
+      font-size:12px;
+      font-weight:700;
+      margin-left:8px;
+      white-space:nowrap;
+    }
   </style>
 </head>
 <body>
@@ -230,7 +238,10 @@
         </div>
       </details>
       <details class="modalSection" id="morningTestGroup">
-        <summary class="modalSectionTitle collapsible">朝学習テスト</summary>
+        <summary class="modalSectionTitle collapsible">
+  				<span>朝学習テスト</span>
+  				<span class="modalAlert">▷朝学習テスト⑨：3月23日（月）</span>
+				</summary>
         <div class="modalSectionBody">
           <button class="modalBtn" data-subject="朝学習テスト⑧">→　朝学習テスト⑧</button>
           <button class="modalBtn" data-subject="朝学習テスト⑨" disabled>→　朝学習テスト⑨</button>
