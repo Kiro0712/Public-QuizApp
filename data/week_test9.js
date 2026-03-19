@@ -1,6 +1,12 @@
 // 朝学習テスト⑨
 const WEEK_TEST9_ITEMS = [
-    
+    {no:401, en:"melt", ja:"溶ける、溶かす", d:""},
+    {no:402, en:"feed", ja："食べ物を与える", d:""},
+    {no:403, en:"prohibit", alt:["forbid","ban"], ja:"禁止する", d:""},
+    {no:404, en:"equipment", ja:"装備、設備", d:""},
+    {no:405, en:"instrument", alt:["musical instrument"], ja:"器具、楽器", d:""},
+    {no:406, en:"furniture", ja:"家具", d:""},
+    {no:407, en:"remind", ja:"思い出させる", d:""},
 ];
 
 const LABELS = ["ア", "イ", "ウ"];
