@@ -5,6 +5,7 @@ const EC1_DATA_SOURCE = (typeof EC1_DATA === "undefined") ? {} : EC1_DATA;
 const MATH1_DATA_SOURCE = (typeof MATH1_DATA === "undefined") ? {} : MATH1_DATA;
 const PHYSICS_BASIC_DATA_SOURCE = (typeof PHYSICS_BASIC_DATA === "undefined") ? {} : PHYSICS_BASIC_DATA;
 const WEEK_TEST8_DATA_SOURCE = (typeof WEEK_TEST8_DATA === "undefined") ? {} : WEEK_TEST8_DATA;
+const WEEK_TEST9_DATA_SOURCE = (typeof WEEK_TEST9_DATA === "undefined") ? {} : WEEK_TEST9_DATA;
 
 const SUBJECT_DEFAULTS = {
   "公共": DEFAULT_DATA,
@@ -15,6 +16,7 @@ const SUBJECT_DEFAULTS = {
   "数学Ⅰ": MATH1_DATA_SOURCE,
   "物理基礎": PHYSICS_BASIC_DATA_SOURCE,
   "朝学習テスト⑧": WEEK_TEST8_DATA_SOURCE,
+  "朝学習テスト⑨": WEEK_TEST9_DATA_SOURCE,
 };
 
 /* =========================
@@ -908,6 +910,7 @@ function loadCore(saved){
     "数学Ⅰ": SUBJECT_DEFAULTS["数学Ⅰ"],
     "物理基礎": SUBJECT_DEFAULTS["物理基礎"],
     "朝学習テスト⑧": SUBJECT_DEFAULTS["朝学習テスト⑧"],
+    "朝学習テスト⑨": SUBJECT_DEFAULTS["朝学習テスト⑨"],
   };
 
   const hasCurrent = saved && saved.dataVersion === DATA_VERSION;
@@ -1123,6 +1126,7 @@ function maybeRunTests(){
   assert(!!SUBJECT_DEFAULTS["数学Ⅰ"], "has 数学Ⅰ");
   assert(!!SUBJECT_DEFAULTS["物理基礎"], "has 物理基礎");
   assert(!!SUBJECT_DEFAULTS["朝学習テスト⑧"], "has 朝学習テスト⑧");
+  assert(!!SUBJECT_DEFAULTS["朝学習テスト⑨"], "has 朝学習テスト⑨");
 
   assert(Array.isArray(HEALTH_DATA["9 喫煙と健康"]) && HEALTH_DATA["9 喫煙と健康"].length > 0, "health chapter 9 exists");
   assert(Array.isArray(HEALTH_DATA["10 飲酒と健康"]) && HEALTH_DATA["10 飲酒と健康"].length > 0, "health chapter 10 exists");
